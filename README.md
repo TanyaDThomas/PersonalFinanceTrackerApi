@@ -2,7 +2,7 @@
 
 A RESTful ASP.NET Core Web API for managing personal finance data, including accounts, categories, and transactions.
 
-This project demonstrates building a traditional RESTful API using modern ASP.NET Core practices, including DTOs, service-layer architecture, Entity Framework Core, SQL Server, and centralized exception handling.
+This project demonstrates building a traditional controller-based RESTful API using modern ASP.NET Core practices, including DTOs, service-layer architecture, Entity Framework Core, SQL Server, and centralized exception handling.
 
 ## Features
 
