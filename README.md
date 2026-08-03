@@ -68,12 +68,20 @@ The API follows a layered approach:
 2. Update the connection string in `appsettings.json`
 
 3. Apply migrations:
+   ```markdown
    dotnet ef migrations add InitialMigration
+   ```
+   
+   ```markdown
    dotnet ef database update
+   ```
 
 
 5. Run the application:
-  dotnet run
+6. 
+   ```markdown
+    dotnet run
+   ```
 
 
 5. Open Scalar to explore the API endpoints
