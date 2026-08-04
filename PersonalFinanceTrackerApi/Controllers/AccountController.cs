@@ -7,7 +7,7 @@ namespace PersonalFinanceTrackerApi.Controllers
 {
     [ApiController]
     [Route("api/accounts")]
-    public class AccountController : Controller
+    public class AccountController : ControllerBase
     {
         private readonly IAccountCommandService _commandService;
         private readonly IAccountQueryService _queryService;
@@ -22,7 +22,7 @@ namespace PersonalFinanceTrackerApi.Controllers
         public async Task<IActionResult> GetAll()
         {
             var allAccounts = await _queryService.GetAllAccountsAsync();
-            return Ok();
+            return Ok(allAccounts);
         }
 
         [HttpGet("{id}")]
@@ -43,14 +43,14 @@ namespace PersonalFinanceTrackerApi.Controllers
                 account);
         }
 
-        [HttpPut]
+        [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, UpdateAccountDto dto)
         {
             await _commandService.UpdateAsync(id, dto);
             return NoContent();
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             await _commandService.DeleteAsync(id);

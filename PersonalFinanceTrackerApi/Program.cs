@@ -25,6 +25,10 @@ builder.Services.AddScoped<ICategoryQueryService, CategoryQueryService>();
 builder.Services.AddScoped<IAccountCommandService, AccountCommandService>();
 builder.Services.AddScoped<IAccountQueryService, AccountQueryService>();
 
+//Account Types
+builder.Services.AddScoped<IAccountTypeCommandService, AccountTypeCommandService>();
+builder.Services.AddScoped<IAccountTypeQueryService, AccountTypeQueryService>();
+
 //Exception Middleware
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();

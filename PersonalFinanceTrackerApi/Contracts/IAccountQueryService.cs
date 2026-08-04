@@ -1,10 +1,11 @@
-﻿using PersonalFinanceTrackerApi.Entities;
+﻿using PersonalFinanceTrackerApi.DTOs;
+using PersonalFinanceTrackerApi.Entities;
 
 namespace PersonalFinanceTrackerApi.Contracts
 {
     public interface IAccountQueryService
     {
-        Task<IEnumerable<Account>> GetAllAccountsAsync();
-        Task<Account> GetAccountsByIdAsync(int id);
+        Task<IEnumerable<AccountDto>> GetAllAccountsAsync();
+        Task<AccountDto> GetAccountsByIdAsync(int id);
     }
 }

@@ -9,5 +9,6 @@ namespace PersonalFinanceTrackerApi.DTOs
         public string AccountName { get; set; } = string.Empty;
         public string AccountType { get; set; } = string.Empty;
         public decimal CurrentBalance { get; set; }
+
     }
 }
