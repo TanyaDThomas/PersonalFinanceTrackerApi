@@ -21,6 +21,10 @@ builder.Services.AddDbContext<FinanceDbContext>(options =>
 builder.Services.AddScoped<ICategoryCommandService, CategoryCommandService>();
 builder.Services.AddScoped<ICategoryQueryService, CategoryQueryService>();
 
+//Accounts
+builder.Services.AddScoped<IAccountCommandService, AccountCommandService>();
+builder.Services.AddScoped<IAccountQueryService, AccountQueryService>();
+
 //Exception Middleware
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
