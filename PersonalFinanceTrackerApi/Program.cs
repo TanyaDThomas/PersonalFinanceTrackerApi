@@ -29,9 +29,14 @@ builder.Services.AddScoped<IAccountQueryService, AccountQueryService>();
 builder.Services.AddScoped<IAccountTypeCommandService, AccountTypeCommandService>();
 builder.Services.AddScoped<IAccountTypeQueryService, AccountTypeQueryService>();
 
+//Transaction Type
+builder.Services.AddScoped<ITransactionTypeCommandService, TransactionTypeCommandService>();
+builder.Services.AddScoped<ITransactionTypeQueryService, TransactionTypeQueryService>();
+
 //Exception Middleware
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+
 
 var app = builder.Build();
 
