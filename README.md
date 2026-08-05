@@ -89,6 +89,19 @@ Transactions can return related information such as the account name, account ty
 * LINQ
 * Dependency Injection
 
+## API Documentation
+
+The API is documented and tested using Scalar.
+
+### Scalar API Reference
+
+![Scalar API Reference](images/allcrudoperations.png)
+
+### Example API Response
+
+![Transaction API Response](images/createtransaction.png)
+![All Transaction APIs](images/alltransactions.png)
+
 ## Getting Started
 
 ### Prerequisites
