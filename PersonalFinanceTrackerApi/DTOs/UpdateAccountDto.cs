@@ -11,6 +11,8 @@ namespace PersonalFinanceTrackerApi.DTOs
         [Required]
         public int AccountTypeId { get; set; }
 
+        [Required]
+        [Range(typeof(decimal), "0.01", "999.99")]
         public decimal CurrentBalance { get; set; }
     }
 }

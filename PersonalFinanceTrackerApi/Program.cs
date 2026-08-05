@@ -29,6 +29,10 @@ builder.Services.AddScoped<IAccountQueryService, AccountQueryService>();
 builder.Services.AddScoped<IAccountTypeCommandService, AccountTypeCommandService>();
 builder.Services.AddScoped<IAccountTypeQueryService, AccountTypeQueryService>();
 
+//Transactions
+builder.Services.AddScoped<ITransactionCommandService,  TransactionCommandService>();
+builder.Services.AddScoped<ITransactionQueryService, TransactionQueryService>();
+
 //Transaction Type
 builder.Services.AddScoped<ITransactionTypeCommandService, TransactionTypeCommandService>();
 builder.Services.AddScoped<ITransactionTypeQueryService, TransactionTypeQueryService>();
