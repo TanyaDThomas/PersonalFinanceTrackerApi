@@ -26,6 +26,19 @@ This project demonstrates building a traditional controller-based RESTful API us
 * Entity relationships and foreign-key validation
 * Asynchronous database operations
 
+### Querying, Filtering, Sorting, and Pagination
+
+* Account filtering by account type
+* Account filtering by active/inactive status
+* Account searching by account name
+* Transaction searching by description
+* Transaction filtering by account, category, transaction type, and date range
+* Transaction sorting by supported fields
+* Transaction pagination
+* Configurable page size and page number
+* Total result count and total page information
+
+
 ### Error Handling
 
 * Global exception handling using ASP.NET Core `IExceptionHandler`
@@ -140,7 +153,22 @@ GET    /api/accounts/{id}
 POST   /api/accounts
 PUT    /api/accounts/{id}
 DELETE /api/accounts/{id}
+
 ```
+#### Account Query Parameters
+
+The account GET endpoint supports filtering and searching:
+
+```text
+GET /api/accounts?accountTypeName=Checking&isActive=true&accountName=Primary
+```
+
+##### Parameter	& Purpose
+| Parameter           | Purpose                                 |
+| ------------------- | --------------------------------------- |
+| `accountTypeName`   | Filters accounts by account type        |
+| `isActive	Filters`  | accounts by active/inactive status      |
+| `accountName	`      | Searches or filters by account name     |
 
 ### Account Types
 
@@ -172,6 +200,29 @@ PUT    /api/transactions/{id}
 DELETE /api/transactions/{id}
 ```
 
+#### Transaction Query Parameters
+
+The transaction GET endpoint supports searching, filtering, sorting, and pagination.
+
+Example:
+```text
+GET /api/transactions?search=rent&sortBy=amount&sortDirection=desc&pageNumber=1&pageSize=10
+```
+| Parameter           | Purpose                                 |
+| ------------------- | --------------------------------------- |
+| `search`            | Searches transaction descriptions       |
+| `accountId`         | Filters by account                      |
+| `categoryId`        | Filters by category                     |
+| `transactionTypeId` | Filters by transaction type             |
+| `startDate`         | Filters transactions from a date        |
+| `endDate`           | Filters transactions through a date     |
+| `sortBy`            | Determines the field used for sorting   |
+| `sortDirection`     | Sorts ascending or descending           |
+| `pageNumber`        | Selects the page of results             |
+| `pageSize`          | Controls the number of results per page |
+
+
+
 ### Transaction Types
 
 ```text
@@ -185,10 +236,6 @@ DELETE /api/transactiontypes/{id}
 ## Possible Future Improvements
 
 * Advanced validation with FluentValidation
-* Filtering
-* Pagination
-* Sorting
-* Searching
 * Logging and monitoring
 * JWT authentication and authorization
 * Automated testing
