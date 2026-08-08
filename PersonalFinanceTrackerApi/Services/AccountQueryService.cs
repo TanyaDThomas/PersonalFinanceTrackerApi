@@ -16,11 +16,27 @@ namespace PersonalFinanceTrackerApi.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<AccountDto>> GetAllAccountsAsync()
+        public async Task<IEnumerable<AccountDto>> GetAllAccountsAsync(string? accountTypeName,bool? isActive, string? accountName)
         {
-            return await _context.Accounts
+            var query = _context.Accounts.AsQueryable();
+
+           if(!string.IsNullOrWhiteSpace(accountTypeName))
+            {
+                query = query.Where(a => a.AccountType.Name.Contains(accountTypeName));
+            }
+
+            if(isActive.HasValue)
+            {
+                query = query.Where(a => a.IsActive == isActive.Value);
+            }
+
+            if(!string.IsNullOrWhiteSpace(accountName))
+            {
+                query = query.Where(a => a.AccountName.Contains(accountName));
+            }
+
+            return await query
                 .AsNoTracking()
-                .Include(at => at.AccountType)
                .Select(a => new AccountDto
                {
                    Id = a.Id,

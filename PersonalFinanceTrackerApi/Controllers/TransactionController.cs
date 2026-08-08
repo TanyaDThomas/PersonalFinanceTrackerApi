@@ -19,9 +19,9 @@ namespace PersonalFinanceTrackerApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] TransactionQueryParameters parameters)
         {
-            var allTransactions = await _queryService.GetAllAsync();
+            var allTransactions = await _queryService.GetAllAsync(parameters);
             return Ok(allTransactions);
         }
 

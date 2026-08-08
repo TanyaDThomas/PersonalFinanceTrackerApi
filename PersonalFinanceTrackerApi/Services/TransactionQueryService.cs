@@ -16,9 +16,52 @@ namespace PersonalFinanceTrackerApi.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<TransactionDto>> GetAllAsync()
+        public async Task<IEnumerable<TransactionDto>> GetAllAsync(TransactionQueryParameters parameters)
         {
-            return await _context.Transactions
+            var query = _context.Transactions.AsQueryable();
+
+            if(!string.IsNullOrWhiteSpace(parameters.Description))
+            {
+                query = query.Where(t => t.Description.Contains(parameters.Description));
+;            }
+
+            if(parameters.AccountId.HasValue)
+            {
+                query = query.Where(t => t.AccountId == parameters.AccountId.Value);
+            }
+
+            if(!string.IsNullOrWhiteSpace(parameters.CategoryName))
+            {
+                query = query.Where(t => t.Category.Name.Contains(parameters.CategoryName));
+            }
+
+            if(!string.IsNullOrWhiteSpace(parameters.TransactionTypeName))
+            {
+                query = query.Where(t => t.TransactionType.Name.Contains(parameters.TransactionTypeName));
+            }
+
+            if(parameters.MinAmount.HasValue)
+            {
+                query = query.Where(t => t.Amount >=  parameters.MinAmount.Value);
+            }
+
+            if(parameters.MaxAmount.HasValue)
+            {
+                query = query.Where(t => t.Amount <=  parameters.MaxAmount.Value);
+            }
+
+            if(parameters.StartDate.HasValue)
+            {
+                query = query.Where(t => t.TransactionDate >= parameters.StartDate.Value);
+            }
+                
+            if(parameters.EndDate.HasValue)
+            {
+                query = query.Where(t => t.TransactionDate <= parameters.EndDate.Value);
+            }
+
+            return await query
+            //return await _context.Transactions
                 .AsNoTracking()
                 .AsSplitQuery()
                 .Include(a => a.Account)

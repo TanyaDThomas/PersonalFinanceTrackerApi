@@ -19,9 +19,9 @@ namespace PersonalFinanceTrackerApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(string? accountTypeName, bool isActive, string? accountName)
         {
-            var allAccounts = await _queryService.GetAllAccountsAsync();
+            var allAccounts = await _queryService.GetAllAccountsAsync(accountTypeName, isActive, accountName);
             return Ok(allAccounts);
         }
 
