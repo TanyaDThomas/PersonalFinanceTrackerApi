@@ -21,6 +21,16 @@ namespace PersonalFinanceTrackerApi.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] TransactionQueryParameters parameters)
         {
+            if(parameters.Page < 1)
+            {
+                return BadRequest("Page does not exist.");
+            }
+
+            if(parameters.PageSize < 0 || parameters.PageSize > 100)
+            {
+                return BadRequest("Page size does not exist.");
+            }
+
             var allTransactions = await _queryService.GetAllAsync(parameters);
             return Ok(allTransactions);
         }

@@ -1,11 +1,12 @@
 ﻿using PersonalFinanceTrackerApi.DTOs;
+using PersonalFinanceTrackerApi.Models;
 using System.Transactions;
 
 namespace PersonalFinanceTrackerApi.Contracts
 {
     public interface ITransactionQueryService
     {
-        Task<IEnumerable<TransactionDto>> GetAllAsync(TransactionQueryParameters parameters);
+        Task<PagedResult<TransactionDto>> GetAllAsync(TransactionQueryParameters parameters);
         Task<TransactionDto> GetByIdAsync(int id);
     }
 }

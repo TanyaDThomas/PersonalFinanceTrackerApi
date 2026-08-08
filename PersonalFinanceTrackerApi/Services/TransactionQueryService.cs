@@ -2,7 +2,9 @@
 using PersonalFinanceTrackerApi.Contracts;
 using PersonalFinanceTrackerApi.DTOs;
 using PersonalFinanceTrackerApi.Exceptions;
+using PersonalFinanceTrackerApi.Models;
 using PersonalFinanceTrackerApi.Persistence;
+using System.ComponentModel;
 using System.Transactions;
 
 namespace PersonalFinanceTrackerApi.Services
@@ -16,7 +18,7 @@ namespace PersonalFinanceTrackerApi.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<TransactionDto>> GetAllAsync(TransactionQueryParameters parameters)
+        public async Task<PagedResult<TransactionDto>> GetAllAsync(TransactionQueryParameters parameters)
         {
             var query = _context.Transactions.AsQueryable();
 
@@ -60,7 +62,30 @@ namespace PersonalFinanceTrackerApi.Services
                 query = query.Where(t => t.TransactionDate <= parameters.EndDate.Value);
             }
 
-            return await query
+            var totalCount = await query.CountAsync();
+
+            switch(parameters.SortBy?.ToLower())
+            {
+                case "transactionDate":
+                    query = parameters.SortDirection?.ToLower() == "desc"
+                        ? query.OrderByDescending(td => td.TransactionDate)
+                        : query.OrderBy(td => td.TransactionDate);
+                    break;
+
+                case "Amount":
+                    query = parameters.SortDirection?.ToLower() == "desc"
+                        ? query.OrderByDescending(a => a.Amount)
+                        : query.OrderBy(a => a.Amount);
+                    break;
+
+                default:
+                    query = query.OrderBy(t => t.Id);
+                    break;
+            }
+
+            
+
+            var transactions = await query
             //return await _context.Transactions
                 .AsNoTracking()
                 .AsSplitQuery()
@@ -80,7 +105,21 @@ namespace PersonalFinanceTrackerApi.Services
                     TransactionType = t.TransactionType.Name,
 
                 })
+                .Skip((parameters.Page - 1 ) * 10)
+                .Take(parameters.PageSize)
                 .ToListAsync();
+
+            var totalPages = (int)Math.Ceiling((double) totalCount / parameters.PageSize);
+
+            return new PagedResult<TransactionDto>
+            {
+                Items = transactions,
+                Page = parameters.Page,
+                PageSize = parameters.PageSize,
+                TotalCount = totalCount,
+                TotalPages = totalPages,
+
+            };
         }
 
         public async Task<TransactionDto> GetByIdAsync(int id)
