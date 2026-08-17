@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using PersonalFinanceTrackerApi.Contracts;
-using PersonalFinanceTrackerApi.Exceptions;
-using PersonalFinanceTrackerApi.Persistence;
-using PersonalFinanceTrackerApi.Services;
+using PersonalFinanceTracker.Api.ExceptionHandling;
+using PersonalFinanceTracker.Application.Services.Contracts;
+using PersonalFinanceTracker.Api.Persistence;
+using PersonalFinanceTracker.Application.Services;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);

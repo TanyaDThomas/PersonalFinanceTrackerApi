@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PersonalFinanceTrackerApi.Contracts;
-using PersonalFinanceTrackerApi.DTOs;
+using PersonalFinanceTracker.Application.Contracts;
+using PersonalFinanceTracker.Application.DTOs;
 using System.Reflection.Metadata.Ecma335;
 
-namespace PersonalFinanceTrackerApi.Controllers
+namespace PersonalFinanceTracker.Api.Controllers
 {
     [ApiController]
     [Route("api/transactiontypes")]

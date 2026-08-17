@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client;
-using PersonalFinanceTrackerApi.Contracts;
-using PersonalFinanceTrackerApi.DTOs;
+using PersonalFinanceTracker.Application.Services.Contracts;
+using PersonalFinanceTracker.Application.DTOs;
 
-namespace PersonalFinanceTrackerApi.Controllers
+namespace PersonalFinanceTracker.Api.Controllers
 {
     [ApiController]
     [Route("api/accounts")]

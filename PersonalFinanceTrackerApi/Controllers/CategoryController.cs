@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PersonalFinanceTrackerApi.Contracts;
-using PersonalFinanceTrackerApi.DTOs;
+using PersonalFinanceTracker.Application.Contracts;
+using PersonalFinanceTracker.Application.DTOs;
 
-namespace PersonalFinanceTrackerApi.Controllers
+namespace PersonalFinanceTracker.Api.Controllers
 {
     [ApiController]
     [Route("api/categories")]
