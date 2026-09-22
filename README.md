@@ -1,24 +1,25 @@
 # Personal Finance Tracker API
 
-A RESTful ASP.NET Core Web API for managing personal finance data, including accounts, categories, and transactions.
+A RESTful ASP.NET Core Web API for managing personal finance data, including accounts, account types, categories, transactions, and transaction types.
 
-This project demonstrates building a traditional controller-based RESTful API using modern ASP.NET Core practices, including DTOs, service-layer architecture, Entity Framework Core, SQL Server, and centralized exception handling.
+This project demonstrates building a traditional controller-based REST API using ASP.NET Core, Entity Framework Core, DTOs, dependency injection, service-layer architecture, repository patterns, query and command services, and centralized exception handling.
 
 ## Features
 
 ### CRUD Operations
 
-* Account CRUD operations
-* Account Type CRUD operations
-* Category CRUD operations
-* Transaction CRUD operations
-* Transaction Type CRUD operations
+* Account management
+* Account Type management
+* Category management
+* Transaction management
+* Transaction Type management
 
 ### API Architecture
 
 * Traditional ASP.NET Core Controllers
 * DTO-based data transfer
-* Service layer for business logic
+* Application and Infrastructure project separation
+* Repository pattern
 * Separate query and command services
 * Dependency Injection
 * Entity Framework Core
@@ -28,16 +29,25 @@ This project demonstrates building a traditional controller-based RESTful API us
 
 ### Querying, Filtering, Sorting, and Pagination
 
-* Account filtering by account type
-* Account filtering by active/inactive status
-* Account searching by account name
-* Transaction searching by description
-* Transaction filtering by account, category, transaction type, and date range
-* Transaction sorting by supported fields
-* Transaction pagination
+Accounts support:
+
+* Filtering by account type
+* Filtering by active/inactive status
+* Searching by account name
+
+Transactions support:
+
+* Searching transaction descriptions
+* Filtering by account
+* Filtering by category
+* Filtering by transaction type
+* Filtering by minimum and maximum amount
+* Filtering by date range
+* Sorting by supported fields
+* Ascending and descending sort direction
+* Pagination
 * Configurable page size and page number
 * Total result count and total page information
-
 
 ### Error Handling
 
@@ -54,30 +64,73 @@ This project demonstrates building a traditional controller-based RESTful API us
 
 ## Architecture
 
-The API follows a layered approach:
+The project uses a layered architecture with responsibilities separated between the API, Application, and Infrastructure projects.
 
-* **Controllers**
+### API
 
-  * Handle HTTP requests, routing, and responses
+The API project contains the HTTP-facing portion of the application.
 
-* **DTOs**
+* Controllers handle HTTP requests and responses
+* Dependency injection registers application services and repositories
+* API-specific configuration is kept separate from business logic
 
-  * Control data sent to and returned from the API
-  * Separate DTOs for creating, updating, and returning data where appropriate
+### Application
 
-* **Services**
+The Application project contains the application's business and application logic.
 
-  * Contain business logic and database operations
-  * Query services handle read operations
-  * Command services handle create, update, and delete operations
+* DTOs define data sent to and returned from the API
+* Query services handle read operations
+* Command services handle create, update, and deactivate operations
+* Repository interfaces define the data-access contracts
+* Query parameters and pagination models are defined here
+* Business validation is handled outside the controllers
 
-* **Entity Framework Core**
+### Infrastructure
 
-  * Handles database access, relationships, migrations, and persistence
+The Infrastructure project contains the implementation of database access.
 
-* **Exception Handling**
+* Entity Framework Core
+* `FinanceDbContext`
+* Repository implementations
+* Database queries
+* Entity Framework Core migrations
+* SQL Server persistence
 
-  * Provides centralized exception handling and consistent API responses
+The repository layer keeps the `DbContext` out of the controllers and application services.
+
+### Domain
+
+The Domain project contains the application's core entities and relationships.
+
+Examples include:
+
+* `Account`
+* `AccountType`
+* `Category`
+* `Transaction`
+* `TransactionType`
+
+## Application Flow
+
+A typical request follows this general flow:
+
+```text
+HTTP Request
+     ↓
+Controller
+     ↓
+Application Service
+     ↓
+Repository Interface
+     ↓
+Repository Implementation
+     ↓
+Entity Framework Core
+     ↓
+SQL Server
+```
+
+For query operations, the query service also maps the returned domain entities into DTOs before they are returned by the API.
 
 ## Database Relationships
 
@@ -88,7 +141,12 @@ The application uses Entity Framework Core relationships between:
 * Transactions and Categories
 * Transactions and Transaction Types
 
-Transactions can return related information such as the account name, account type, category, and transaction type.
+Transactions can return related information such as:
+
+* Account name
+* Account type
+* Category
+* Transaction type
 
 ## Technologies
 
@@ -101,6 +159,8 @@ Transactions can return related information such as the account name, account ty
 * REST API
 * LINQ
 * Dependency Injection
+* Repository Pattern
+* DTOs
 
 ## API Documentation
 
@@ -113,6 +173,7 @@ The API is documented and tested using Scalar.
 ### Example API Response
 
 ![Transaction API Response](images/createtransaction.png)
+
 ![All Transaction APIs](images/alltransactions.png)
 
 ## Getting Started
@@ -153,22 +214,23 @@ GET    /api/accounts/{id}
 POST   /api/accounts
 PUT    /api/accounts/{id}
 DELETE /api/accounts/{id}
-
 ```
+
 #### Account Query Parameters
 
-The account GET endpoint supports filtering and searching:
+The account GET endpoint supports filtering and searching.
+
+Example:
 
 ```text
 GET /api/accounts?accountTypeName=Checking&isActive=true&accountName=Primary
 ```
 
-##### Parameter	& Purpose
-| Parameter           | Purpose                                 |
-| ------------------- | --------------------------------------- |
-| `accountTypeName`   | Filters accounts by account type        |
-| `isActive	Filters`  | accounts by active/inactive status      |
-| `accountName	`      | Searches or filters by account name     |
+| Parameter         | Purpose                                    |
+| ----------------- | ------------------------------------------ |
+| `accountTypeName` | Filters accounts by account type           |
+| `isActive`        | Filters accounts by active/inactive status |
+| `accountName`     | Searches or filters by account name        |
 
 ### Account Types
 
@@ -205,23 +267,25 @@ DELETE /api/transactions/{id}
 The transaction GET endpoint supports searching, filtering, sorting, and pagination.
 
 Example:
+
 ```text
-GET /api/transactions?search=rent&sortBy=amount&sortDirection=desc&pageNumber=1&pageSize=10
+GET /api/transactions?description=rent&minAmount=500&startDate=2026-01-01&endDate=2026-03-31&sortBy=amount&sortDirection=desc&pageNumber=1&pageSize=10
 ```
-| Parameter           | Purpose                                 |
-| ------------------- | --------------------------------------- |
-| `search`            | Searches transaction descriptions       |
-| `accountId`         | Filters by account                      |
-| `categoryId`        | Filters by category                     |
-| `transactionTypeId` | Filters by transaction type             |
-| `startDate`         | Filters transactions from a date        |
-| `endDate`           | Filters transactions through a date     |
-| `sortBy`            | Determines the field used for sorting   |
-| `sortDirection`     | Sorts ascending or descending           |
-| `pageNumber`        | Selects the page of results             |
-| `pageSize`          | Controls the number of results per page |
 
-
+| Parameter             | Purpose                                    |
+| --------------------- | ------------------------------------------ |
+| `description`         | Searches transaction descriptions          |
+| `accountId`           | Filters transactions by account            |
+| `categoryName`        | Filters transactions by category name      |
+| `transactionTypeName` | Filters transactions by transaction type   |
+| `minAmount`           | Filters transactions at or above an amount |
+| `maxAmount`           | Filters transactions at or below an amount |
+| `startDate`           | Filters transactions from a date           |
+| `endDate`             | Filters transactions through a date        |
+| `sortBy`              | Determines the field used for sorting      |
+| `sortDirection`       | Sorts ascending or descending              |
+| `pageNumber`          | Selects the page of results                |
+| `pageSize`            | Controls the number of results per page    |
 
 ### Transaction Types
 
@@ -233,15 +297,31 @@ PUT    /api/transactiontypes/{id}
 DELETE /api/transactiontypes/{id}
 ```
 
-## Possible Future Improvements
+## Current Development
 
-* Advanced validation with FluentValidation
-* Logging and monitoring
+The project is currently being refactored toward a cleaner separation of responsibilities using:
+
+* Application services
+* Command/query separation
+* Repository interfaces
+* Infrastructure repository implementations
+* DTO mapping
+* Entity Framework Core for persistence
+
+Additional features such as authentication and authorization will be added as the project continues to develop.
+
+## Future Improvements
+
+* ASP.NET Core Identity
 * JWT authentication and authorization
-* Automated testing
-* Clean Architecture
+* FluentValidation
+* Automated unit testing
+* Logging and monitoring
 * Docker support
 * Deployment
+* Additional reporting and financial analysis
+
+
 
 
 
