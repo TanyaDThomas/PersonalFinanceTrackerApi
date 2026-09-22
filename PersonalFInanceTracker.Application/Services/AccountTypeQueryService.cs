@@ -1,30 +1,29 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿
+using PersonalFinanceTracker.Application.Exceptions;
+using PersonalFinanceTracker.Application.Interfaces;
 using PersonalFinanceTracker.Application.Services.Contracts;
 using PersonalFinanceTracker.Domain.Entities;
-using PersonalFinanceTracker.Infrastructure.Persistence;
-using PersonalFinanceTracker.Application.Exceptions;
+
 
 
 namespace PersonalFinanceTracker.Application.Services
 {
     public class AccountTypeQueryService : IAccountTypeQueryService
     {
-        private readonly FinanceDbContext _context;
+        private readonly IAccountTypeRepository _repo;
 
-        public AccountTypeQueryService(FinanceDbContext context)
+        public AccountTypeQueryService(IAccountTypeRepository repo)
         {
-            _context = context;
+            _repo = repo;
         }
         public async Task<IEnumerable<AccountType>> GetAllAsync()
         {
-            return await _context.AccountTypes
-                .AsNoTracking()
-                .ToListAsync();
+            return await _repo.GetAllAccountTypesAsync();
         }
 
         public async Task<AccountType> GetTypeByIdAsync(int id)
         {
-            var typeById = await _context.AccountTypes.FirstOrDefaultAsync(at => at.Id == id);
+            var typeById = await _repo.GetAccountTypeByIdAsync(id);
 
             if (typeById == null)
             {

@@ -1,31 +1,30 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿
 using PersonalFinanceTracker.Application.Services.Contracts;
 using PersonalFinanceTracker.Domain.Entities;
 using PersonalFinanceTracker.Application.Exceptions;
-using PersonalFinanceTracker.Infrastructure.Persistence;
+using PersonalFinanceTracker.Application.Interfaces;
 
 namespace PersonalFinanceTracker.Application.Services
 {
     public class TransactionTypeQueryService : ITransactionTypeQueryService
     {
-        private readonly FinanceDbContext _context;
+        private readonly ITransactionTypeRepository _repo;
 
-        public TransactionTypeQueryService(FinanceDbContext context)
+        public TransactionTypeQueryService(ITransactionTypeRepository repo)
         {
-            _context = context;
+            _repo = repo;
         }
         public async Task<IEnumerable<TransactionType>> GetAll()
         {
-            return await _context.TransactionTypes
-                .AsNoTracking()
-                .ToListAsync();
+            return await _repo.GetAllTransactionTypeAsync();
         }
 
         public async Task<TransactionType> GetById(int id)
         {
-            var typeById = await _context.TransactionTypes.FirstOrDefaultAsync(tt => tt.Id == id);
-            
-            if(typeById == null)
+            var typeById = await _repo.GetTransactionTypeByIdAsync(id);
+
+
+            if (typeById == null)
             {
                 throw new NotFoundException("Transaction type not found.");
             }

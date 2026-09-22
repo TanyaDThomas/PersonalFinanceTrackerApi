@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PersonalFinanceTracker.Domain\PersonalFinanceTracker.Domain.csproj" />
-    <ProjectReference Include="..\PersonalFinanceTracker.Infrastructure\PersonalFinanceTracker.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

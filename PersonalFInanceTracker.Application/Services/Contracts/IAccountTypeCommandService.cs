@@ -8,6 +8,6 @@ namespace PersonalFinanceTracker.Application.Services.Contracts
     {
         Task<AccountType> CreateAsync(CreateAccountTypeDto dto);
         Task<bool> UpdateAsync(int id, UpdateAccountTypeDto dto);
-        Task<bool> DeleteAsync(int id);
+        Task<bool> DeactivateAsync(int id);
     }
 }

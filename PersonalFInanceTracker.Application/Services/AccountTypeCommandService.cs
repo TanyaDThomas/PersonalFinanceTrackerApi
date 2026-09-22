@@ -1,25 +1,25 @@
-﻿//using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿
 using PersonalFinanceTracker.Application.Services.Contracts;
 using PersonalFinanceTracker.Application.DTOs;
 using PersonalFinanceTracker.Domain.Entities;
 using PersonalFinanceTracker.Application.Exceptions;
+using PersonalFinanceTracker.Application.Interfaces;
 
-using PersonalFinanceTracker.Infrastructure.Persistence;
 
 namespace PersonalFinanceTracker.Application.Services
 {
     public class AccountTypeCommandService : IAccountTypeCommandService
     {
-        private readonly FinanceDbContext _context;
+        private readonly IAccountTypeRepository _repo;
 
-        public AccountTypeCommandService(FinanceDbContext context)
+        public AccountTypeCommandService(IAccountTypeRepository repo)
         {
-            _context = context;
+            _repo = repo;
         }
         public async Task<AccountType> CreateAsync(CreateAccountTypeDto dto)
         {
-            var exists = await _context.AccountTypes.AnyAsync(a => a.Name == dto.AccountTypeName);
+            var exists = await _repo.ExistsByNameAsync(dto.AccountTypeName);
+
             if (exists)
             {
                 throw new ConflictException("There is already an account type by that name");
@@ -30,8 +30,7 @@ namespace PersonalFinanceTracker.Application.Services
                 Name = dto.AccountTypeName
             };
 
-            _context.Add(accountType);
-            await _context.SaveChangesAsync();
+            await _repo.CreateAsync(accountType);
 
             return accountType;
            
@@ -39,35 +38,34 @@ namespace PersonalFinanceTracker.Application.Services
 
         public async Task<bool> UpdateAsync(int id, UpdateAccountTypeDto dto)
         {
-            var existingType = await _context.AccountTypes.FindAsync(id);
-            if(existingType ==null)
+            var existingType = await _repo.GetAccountTypeByIdAsync(id);
+            if (existingType == null)
             {
                 throw new NotFoundException("Account type not found.");
             }
 
-            var duplicateExists = await _context.AccountTypes.AnyAsync(at => at.Name == dto.AccountTypeName && at.Id != id);
-            if(duplicateExists)
+            var duplicateExists = await _repo.ExistsByNameAsync(dto.AccountTypeName);
+            if (duplicateExists)
             {
                 throw new ConflictException("Account Type already exists");
             }
 
             existingType.Name = dto.AccountTypeName;
 
-            await _context.SaveChangesAsync();
+            await _repo.UpdateAsync(existingType);
 
             return true;
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task<bool> DeactivateAsync(int id)
         {
-            var typeToDelete = await _context.AccountTypes.FindAsync(id);
-            if(typeToDelete == null)
+            var typeToDelete = await _repo.GetAccountTypeByIdAsync(id);
+            if (typeToDelete == null)
             {
                 throw new NotFoundException("Account type does not exist.");
             }
 
-            _context.Remove(typeToDelete);
-            await _context.SaveChangesAsync();
+            _repo.DeactivateAsync(typeToDelete);
 
             return true;
             

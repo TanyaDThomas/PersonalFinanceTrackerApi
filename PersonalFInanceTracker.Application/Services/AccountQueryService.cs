@@ -1,74 +1,72 @@
 ﻿
-using PersonalFinanceTracker.Application.Services.Contracts;
 using PersonalFinanceTracker.Application.DTOs;
-using PersonalFinanceTracker.Domain.Entities;
 using PersonalFinanceTracker.Application.Exceptions;
-using PersonalFinanceTracker.Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore;
+using PersonalFinanceTracker.Application.Interfaces;
+using PersonalFinanceTracker.Application.Services.Contracts;
 
 namespace PersonalFinanceTracker.Application.Services
 {
     public class AccountQueryService : IAccountQueryService
     {
-        private readonly FinanceDbContext _context;
+        private readonly IAccountRepository _repo;
 
-        public AccountQueryService(FinanceDbContext context)
+        public AccountQueryService(IAccountRepository repo)
         {
-            _context = context;
+            _repo = repo;
         }
+
+      
 
         public async Task<IEnumerable<AccountDto>> GetAllAccountsAsync(string? accountTypeName,bool? isActive, string? accountName)
         {
-            var query = _context.Accounts.AsQueryable();
-
-           if(!string.IsNullOrWhiteSpace(accountTypeName))
+            var accountList = await _repo.GetAllAccountsAsync(accountTypeName, isActive, accountName);
+            if (!accountList.Any())
             {
-                query = query.Where(a => a.AccountType.Name.Contains(accountTypeName));
+                throw new NotFoundException("No accounts avaialble.");
+
             }
 
-            if(isActive.HasValue)
+            var accountDtos = new List<AccountDto>();
+
+            foreach(var account in accountList)
             {
-                query = query.Where(a => a.IsActive == isActive.Value);
+                var accountDto = new AccountDto
+                {
+                    Id = account.Id,
+                    AccountName = account.AccountName,
+                    AccountType = account.AccountType.Name,
+                    CurrentBalance = account.CurrentBalance,
+                    IsActive = account.IsActive
+                };
+
+                accountDtos.Add(accountDto);
             }
 
-            if(!string.IsNullOrWhiteSpace(accountName))
-            {
-                query = query.Where(a => a.AccountName.Contains(accountName));
-            }
-
-            return await query
-                .AsNoTracking()
-               .Select(a => new AccountDto
-               {
-                   Id = a.Id,
-                   AccountName = a.AccountName,
-                   AccountType = a.AccountType.Name,
-                   CurrentBalance = a.CurrentBalance
-               })
-                .ToListAsync();
+            return accountDtos; 
         }
 
-        public async Task<AccountDto> GetAccountsByIdAsync(int id)
-        {
-            var accountById = await _context.Accounts
-                .Include(at => at.AccountType)
-                .Select(a => new AccountDto
-                {
-                    Id = a.Id,
-                    AccountName = a.AccountName,
-                    AccountType = a.AccountType.Name,
-                    CurrentBalance = a.CurrentBalance
-                })
-                .FirstOrDefaultAsync( a => a.Id == id);
+       
 
-            if(accountById == null)
+        public async Task<AccountDto> GetAccountByIdAsync(int id)
+        {
+            var accountById = await _repo.GetAccountByIdAsync(id);
+            if (accountById == null)
             {
                 throw new NotFoundException("There is no account found by that id.");
             }
 
-            return accountById;
+            var accountDto = new AccountDto
+            {
+                Id = accountById.Id,
+                AccountName = accountById.AccountName,
+                AccountType= accountById.AccountType.Name,
+                CurrentBalance= accountById.CurrentBalance,
+                IsActive = accountById.IsActive
+            };
+
+            return accountDto;
         }
 
-      
+
     }
 }

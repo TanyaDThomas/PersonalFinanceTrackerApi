@@ -1,28 +1,29 @@
-﻿using Microsoft.EntityFrameworkCore;
-using PersonalFinanceTracker.Application.Services.Contracts;
+﻿
 using PersonalFinanceTracker.Application.DTOs;
-using PersonalFinanceTracker.Domain.Entities;
 using PersonalFinanceTracker.Application.Exceptions;
-using PersonalFinanceTracker.Infrastructure.Persistence;
+using PersonalFinanceTracker.Application.Interfaces;
+using PersonalFinanceTracker.Application.Services.Contracts;
+using PersonalFinanceTracker.Domain.Entities;
+
 
 namespace PersonalFinanceTracker.Application.Services
 {
     public class TransactionTypeCommandService : ITransactionTypeCommandService
     {
-        private readonly FinanceDbContext _context;
+        private readonly ITransactionTypeRepository _repo;
 
-        public TransactionTypeCommandService(FinanceDbContext context)
+        public TransactionTypeCommandService(ITransactionTypeRepository repo)
         {
-            _context = context;
+            _repo = repo;
         }
 
         public async Task<TransactionType> CreateAsync(CreateTransactionTypeDto dto)
         {
-            var exists = await _context.TransactionTypes.AnyAsync(tt => tt.Name == dto.Name);
+            var exists = await _repo.ExistsByNameAsync(dto.Name);
 
-            if(exists)
+            if (exists)
             {
-                throw new ConflictException("Transaction type already exists!");
+                throw new ConflictException("There is already a transaction type by that name");
             }
 
             var transactionType = new TransactionType
@@ -30,49 +31,45 @@ namespace PersonalFinanceTracker.Application.Services
                 Name = dto.Name
             };
 
-            _context.Add(transactionType);
-            await _context.SaveChangesAsync();
+            await _repo.CreateAsync(transactionType);
 
             return transactionType;
-
         }
 
         public async Task<bool> UpdateAsync(int id, UpdateTransactionTypeDto dto)
         {
-            var existingType = await _context.TransactionTypes.FindAsync(id);
-            if(existingType == null)
+            var existingTransactionType = await _repo.GetTransactionTypeByIdAsync(id);
+
+            if (existingTransactionType == null)
             {
-                throw new NotFoundException("Transaction type not found.");
+                throw new NotFoundException("Transaction type not found");
             }
 
-            var duplicateExists = await _context.TransactionTypes.AnyAsync(tt => tt.Name == dto.Name && tt.Id != id);
-            if(duplicateExists)
+            var duplicateExists = await _repo.ExistsByNameAsync(dto.Name);
+
+            if (duplicateExists)
             {
-                throw new ConflictException("Transaction type already exists.");
-              
+                throw new ConflictException("Transaction type by this name already exists");
             }
 
-            existingType.Name = dto.Name;
+            existingTransactionType.Name = dto.Name;
 
-            await _context.SaveChangesAsync();
+            await _repo.UpdateAsync(existingTransactionType);
 
             return true;
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var typeToDelete = await _context.TransactionTypes.FindAsync(id);
-            if(typeToDelete == null)
+            var transactionTypeToDelete = await _repo.GetTransactionTypeByIdAsync(id);
+            if (transactionTypeToDelete == null)
             {
-                throw new NotFoundException("Transaction type not found.");
+                throw new NotFoundException("Account not found to delete");
             }
 
-            _context.Remove(typeToDelete);
-            await _context.SaveChangesAsync();
+            await _repo.DeactivateAsync(transactionTypeToDelete);
 
             return true;
-
-
         }
 
     }

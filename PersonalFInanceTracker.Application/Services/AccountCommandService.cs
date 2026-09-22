@@ -1,34 +1,35 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
-using PersonalFinanceTracker.Application.Services.Contracts;
+﻿
 using PersonalFinanceTracker.Application.DTOs;
-using PersonalFinanceTracker.Domain.Entities;
 using PersonalFinanceTracker.Application.Exceptions;
-using PersonalFinanceTracker.Infrastructure.Persistence;
+using PersonalFinanceTracker.Application.Interfaces;
+using PersonalFinanceTracker.Application.Services.Contracts;
+
+using PersonalFinanceTracker.Domain.Entities;
 
 namespace PersonalFinanceTracker.Application.Services
 {
     public class AccountCommandService : IAccountCommandService
     {
-        private readonly FinanceDbContext _context;
+        private readonly IAccountRepository _repo;
 
-        public AccountCommandService(FinanceDbContext context)
+        public AccountCommandService(IAccountRepository repo)
         {
-            _context = context;
+            _repo = repo;
         }
         public async Task<Account> CreateAsync(CreateAccountDto dto)
         {
-            var exists = await _context.Accounts.AnyAsync(a => a.AccountName == dto.AccountName);
+            var exists = await _repo.ExistsByNameAsync(dto.AccountName);
             if (exists)
             {
                 throw new ConflictException("There is already an account by that name");
             }
 
-            var typeExists = await _context.AccountTypes.AnyAsync(at => at.Id == dto.AccountTypeId);
-            if(!typeExists)
+            var typeExists = await _repo.AccountTypeExistsAsync(dto.AccountTypeId);
+            if (!typeExists)
             {
                 throw new NotFoundException("Account type by that id does not exist");
             }
+
 
             var account = new Account
             {
@@ -37,28 +38,27 @@ namespace PersonalFinanceTracker.Application.Services
                 CurrentBalance = dto.CurrentBalance
             };
 
-            _context.Add(account);
-            await _context.SaveChangesAsync();
-
+            await _repo.CreateAsync(account);
             return account;
+            
         }
 
         public async Task<bool> UpdateAsync(int id, UpdateAccountDto dto)
         {
-            var existingAccount = await _context.Accounts.FindAsync(id);
-            if(existingAccount == null)
+            var existingAccount = await _repo.GetAccountByIdAsync(id);
+            if (existingAccount == null)
             {
                 throw new NotFoundException("Account not found");
             }
 
-            var accountTypeExists = await _context.AccountTypes.AnyAsync(at => at.Id == dto.AccountTypeId);
-            if(!accountTypeExists)
+            var accountTypeExists = await _repo.AccountTypeExistsAsync(dto.AccountTypeId);
+            if (!accountTypeExists)
             {
                 throw new NotFoundException("Account Type by that id does not exist.");
             }
 
-            var duplicateAccount = await _context.Accounts.AnyAsync(a => a.AccountName == dto.AccountName && a.Id != id);
-            if(duplicateAccount)
+            var duplicateAccount = await _repo.ExistsByNameAsync(dto.AccountName);
+            if (duplicateAccount)
             {
                 throw new ConflictException("Account by this name already exists");
             }
@@ -68,25 +68,24 @@ namespace PersonalFinanceTracker.Application.Services
             existingAccount.CurrentBalance = dto.CurrentBalance;
 
            
-            await _context.SaveChangesAsync();
+           await _repo.UpdateAsync(existingAccount);
 
             return true;
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task<bool> DeactivateAsync(int id)
         {
-            var accountToDelete = await _context.Accounts.FindAsync(id);
-            if(accountToDelete == null)
+            var accountToDelete = await _repo.GetAccountByIdAsync(id);
+            if (accountToDelete == null)
             {
                 throw new NotFoundException("Account not found to delete");
             }
 
-            _context.Remove(accountToDelete);
-            await _context.SaveChangesAsync();
+            await _repo.DeactivateAsync(accountToDelete);
 
             return true;
         }
 
-      
+       
     }
 }

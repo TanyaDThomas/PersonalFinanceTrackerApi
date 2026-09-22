@@ -16,6 +16,7 @@ namespace PersonalFinanceTracker.Domain.Entities
 
         public int TransactionTypeId { get; set; }
         public TransactionType TransactionType { get; set; } = null!;
+        public bool IsActive { get; set; } = true;
 
         //FUTURE IDENTITY public string UserId { get; set; } = string.Empty;
 
