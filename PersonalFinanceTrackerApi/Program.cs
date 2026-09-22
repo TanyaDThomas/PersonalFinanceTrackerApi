@@ -42,6 +42,7 @@ builder.Services.AddScoped<ITransactionRepository,  TransactionRepository>();
 //Transaction Type
 builder.Services.AddScoped<ITransactionTypeCommandService, TransactionTypeCommandService>();
 builder.Services.AddScoped<ITransactionTypeQueryService, TransactionTypeQueryService>();
+builder.Services.AddScoped<ITransactionTypeRepository, TransactionTypeRepository>();
 
 //Exception Middleware
 builder.Services.AddProblemDetails();
