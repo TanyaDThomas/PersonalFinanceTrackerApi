@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PersonalFinanceTracker.Application.Contracts;
 using PersonalFinanceTracker.Application.DTOs;
+using PersonalFinanceTracker.Application.Services.Contracts;
 
 namespace PersonalFinanceTracker.Api.Controllers
 {

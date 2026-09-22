@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PersonalFinanceTracker.Application.Contracts;
 using PersonalFinanceTracker.Application.DTOs;
+using PersonalFinanceTracker.Application.Services.Contracts;
 
 namespace PersonalFinanceTracker.Api.Controllers
 {
@@ -54,7 +54,7 @@ namespace PersonalFinanceTracker.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            await _commandService.DeleteAsync(id);
+            await _commandService.DeactivateAsync(id);
             return NoContent();
         }
     }

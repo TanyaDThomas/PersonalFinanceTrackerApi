@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PersonalFinanceTracker.Application.Contracts;
+
 using PersonalFinanceTracker.Application.DTOs;
+using PersonalFinanceTracker.Application.Models;
+using PersonalFinanceTracker.Application.Services.Contracts;
 
 namespace PersonalFinanceTracker.Api.Controllers
 {
@@ -21,7 +23,7 @@ namespace PersonalFinanceTracker.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] TransactionQueryParameters parameters)
         {
-            if(parameters.Page < 1)
+            if(parameters.PageNumber < 1)
             {
                 return BadRequest("Page does not exist.");
             }

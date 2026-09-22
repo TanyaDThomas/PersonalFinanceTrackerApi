@@ -28,7 +28,7 @@ namespace PersonalFinanceTracker.Api.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var accountById = await _queryService.GetAccountsByIdAsync(id);
+            var accountById = await _queryService.GetAccountByIdAsync(id);
             return Ok(accountById);
         }
 
@@ -53,7 +53,7 @@ namespace PersonalFinanceTracker.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            await _commandService.DeleteAsync(id);
+            await _commandService.DeactivateAsync(id);
             return NoContent();
         }
     }
