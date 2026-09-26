@@ -48,6 +48,9 @@ builder.Services.AddScoped<ITransactionTypeRepository, TransactionTypeRepository
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
+// HealthCheck
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<FinanceDbContext>();
 
 var app = builder.Build();
 
@@ -59,6 +62,8 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
     app.MapScalarApiReference();
 }
+
+app.MapHealthChecks("/health");
 
 app.UseHttpsRedirection();
 
