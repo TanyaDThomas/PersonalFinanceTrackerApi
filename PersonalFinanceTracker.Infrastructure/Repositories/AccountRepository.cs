@@ -1,6 +1,5 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
-
 using PersonalFinanceTracker.Application.Interfaces;
 using PersonalFinanceTracker.Domain.Entities;
 using PersonalFinanceTracker.Infrastructure.Persistence;
