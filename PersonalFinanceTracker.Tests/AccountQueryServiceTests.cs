@@ -21,19 +21,7 @@ namespace PersonalFinanceTracker.Tests
         public async Task GetByIdAsync_WhenAccountExists_ReturnsAccountDto()
         {
             // Arrange
-            var account = new Account
-            {
-                Id = 1,
-                AccountName = "Account Test",
-                AccountType = new AccountType
-                {
-                    Id = 1,
-                    Name = "Checking"
-                },
-                CurrentBalance = 38413.42M,
-                IsActive = true
-
-            };
+            var account = AccountTestData.CreateAccount();
 
             _repoMock.Setup(repo => repo.GetAccountByIdAsync(account.Id))
                 .ReturnsAsync(account);
@@ -43,7 +31,7 @@ namespace PersonalFinanceTracker.Tests
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("Account Test", result.AccountName);
+            Assert.Equal(account.AccountName, result.AccountName);
         }
 
 
@@ -108,3 +96,4 @@ namespace PersonalFinanceTracker.Tests
         }
     }
 }
+
